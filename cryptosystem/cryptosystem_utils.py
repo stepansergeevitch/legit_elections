@@ -19,21 +19,6 @@ def generate_random_prime(bit_length):
     return number.getRandomNBitInteger(bit_length)
 
 
-# Checks whether or not given integer is a prime.
-# This probably should be a Miller-Rabin test if Python doesn't have a library.
-def is_prime(p):
-    if p < 2:
-        return False
-
-    i = 2
-    while i * i <= p:
-        if p % i == 0:
-            return False
-        i += 1
-
-    return True
-
-
 # Generates a coprime to a given integer.
 def generate_coprime(n):
     r = randint(1, n - 1)
