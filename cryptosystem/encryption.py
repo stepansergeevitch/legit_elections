@@ -27,6 +27,6 @@ class Encryptor(object):
         # Second is (r^n) % n^2, where r is coprime to n.
         second = powmod(generate_coprime(self.public_key[0]), self.public_key[0], modulo)
 
-        print(f'Time spent for message encryption {time.clock() - start}')
+        # print(f'Time spent for message encryption {time.clock() - start}')
 
         return (first * second) % modulo
