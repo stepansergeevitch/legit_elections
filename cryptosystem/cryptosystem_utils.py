@@ -3,7 +3,7 @@
 from Crypto.Util import number
 from random import randint
 
-# Generate two random primes.
+# Generates two random primes.
 def generate_primes(bit_length):
     prime_p = generate_random_prime(bit_length)
     prime_q = generate_random_prime(bit_length)
