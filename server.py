@@ -21,10 +21,10 @@ bind_port = 9999
 
 
 class Server:
-    KEY_REQUEST = "KEY\n"
-    DATA_REQUEST = "DATA\n"
-    SUCCESS = "SUCCESS\n"
-    ERROR = "ERROR\n"
+    KEY_REQUEST = b"KEY\n"
+    DATA_REQUEST = b"DATA\n"
+    SUCCESS = b"SUCCESS\n"
+    ERROR = b"ERROR\n"
 
     def __init__(self, ip_address="127.0.0.1", post=9999, backlog=5, max_seconds=5 * 60):
         self.crypto = Crypto(self)
@@ -86,13 +86,13 @@ class Server:
             print("Server is already stopped")
 
     def handle_client_connection(self, client_socket):
-        request = client_socket.recv(1024)
-        print(f"Received {len(request)} bytes")
         try:
+            request = client_socket.recv(1024)
+            print(f"Received {len(request)} bytes")
             if not request.startswith(Server.KEY_REQUEST):
                 client_socket.send(Server.ERROR)
             else:
-                message = Server.KEY_REQUEST + '\n'.join(self.crypto.public_key)
+                message = Server.KEY_REQUEST + b'\n'.join([k.encode("utf-8") for k in self.crypto.public_key])
                 client_socket.send(message)
 
                 request = client_socket.recv(1024)
