@@ -28,7 +28,6 @@ class Server:
 
     def __init__(self, ip_address="127.0.0.1", post=9999, backlog=5, max_seconds=5 * 60):
         self.crypto = Crypto(self)
-        self.crypto = Crypto(self)
         self.stop_signal = threading.Event()
         self.backlog = backlog
         self.max_work_time = timedelta(seconds=max_seconds)
@@ -97,6 +96,7 @@ class Server:
                 client_socket.send(message)
 
                 request = client_socket.recv(1024)
+                print(f"Received {len(request)} bytes")
                 if not request.startswith(Server.DATA_REQUEST):
                     client_socket.send(Server.ERROR)
                 else:
