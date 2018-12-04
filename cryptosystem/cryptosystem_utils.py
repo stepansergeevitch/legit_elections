@@ -1,9 +1,9 @@
 # Utils used by cryptosystem modules.
 
-from random import getrandbits, randint
+from Crypto.Util import number
+from random import randint
 
-
-# Generates two random primes.
+# Generatespip install pycrypto two random primes.
 def generate_primes(bit_length):
     prime_p = generate_random_prime(bit_length)
     prime_q = generate_random_prime(bit_length)
@@ -16,13 +16,7 @@ def generate_primes(bit_length):
 
 # Generates random prime with bit_length number of bits.
 def generate_random_prime(bit_length):
-    most_significant_bit = 1 << (bit_length-1)
-
-    p = getrandbits(bit_length-1)
-    while not is_prime(p | most_significant_bit):
-        p = getrandbits(bit_length-1)
-
-    return p | most_significant_bit
+    return number.getRandomNBitInteger(bit_length)
 
 
 # Checks whether or not given integer is a prime.
