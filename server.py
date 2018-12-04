@@ -102,7 +102,7 @@ class Server:
                 else:
                     data = request[len(Server.DATA_REQUEST):]
                     self.crypto.process(data)
-        except Exception as e:
+        except BaseException as e:
             print(f"Server error: {e}")
             client_socket.send(Server.ERROR)
         else:
