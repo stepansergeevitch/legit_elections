@@ -15,3 +15,5 @@ Along with basic encryption/decryption mechanisms we implement several basic ope
 
 Please, refer to the following paper for the overview of the implementation:
 https://eprint.iacr.org/2018/827.pdf
+
+Our implementation slightly differs from the described above and is more standard for Paillier Cryptosystem.

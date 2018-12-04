@@ -3,6 +3,7 @@
 import time
 from cryptosystem.cryptosystem_utils import *
 
+
 class Decryptor(object):
 
     # Public key is (n, g).
@@ -26,12 +27,20 @@ class Decryptor(object):
     def decrypt(self, encrypted_message):
         start = time.clock()
 
+        # Modulo is n^2.
         modulo = self.public_key[0] * self.public_key[0]
 
-        r = powmod(encrypted_message, self.private_key[1], self.public_key[0])
-        inv_r = invmod(powmod(r, self.public_key[0], modulo), modulo)
-        res = (encrypted_message * inv_r) % modulo
+        # Calculate (cipher ^ phi) % n^2.
+        res = powmod(encrypted_message, self.private_key[0], modulo)
+
+        # According to algorithm, n must divide (res - 1).
+        if (res - 1) % self.public_key[0] != 0:
+            raise Exception(f'Error in cryptosystem. Decryption failed with this value: {res}')
+
+        res = (res - 1) // self.public_key[0]
 
         print(f'Time spent for message decryption {time.clock() - start}')
 
-        return (res - 1) // self.public_key[0]
+        # Return (res * s) % n.
+        return (res * self.private_key[1]) % self.public_key[0]
+
