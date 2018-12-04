@@ -98,7 +98,7 @@ class Server:
             client_socket.send(Server.ERROR)
         else:
             data = request[len(Server.DATA_REQUEST):]
-            self.crypto.process(data)
+            self.crypto.process([int(it) for it in data.decode("utf-8").split])
 
     def handle_name_request(self, client_socket):
         message = Server.NAMES_REQUEST + b'\n'.join([k.encode("utf-8") for k in names])
