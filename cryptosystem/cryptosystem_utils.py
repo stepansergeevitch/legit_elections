@@ -64,8 +64,9 @@ def powmod(a, b, mod):
 
 
 # Calculates the extended gcd.
-# Please, make sure you feed non-negative integers here.
 def gcdex(a, b):
+    assert a >= 0 and b >= 0
+
     if a == 0:
         return b, 0, 1
 

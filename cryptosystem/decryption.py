@@ -6,12 +6,6 @@ from cryptosystem.cryptosystem_utils import *
 
 class Decryptor(object):
 
-    # Public key is (n, g).
-    public_key = []
-
-    # Private key is (phi, s).
-    private_key = []
-
     # Constructor.
     def __init__(self, pub_key, priv_key):
         if len(pub_key) != 2:
@@ -20,7 +14,10 @@ class Decryptor(object):
         if len(priv_key) != 2:
             raise Exception(f'Did not provide correct number of arguments for the private key. Received {priv_key}')
 
+        # Public key is (n, g).
         self.public_key = pub_key
+
+        # Private key is (phi, s).
         self.private_key = priv_key
 
     # Decrypts the message.
@@ -43,4 +40,3 @@ class Decryptor(object):
 
         # Return (res * s) % n.
         return (res * self.private_key[1]) % self.public_key[0]
-

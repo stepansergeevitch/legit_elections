@@ -6,14 +6,12 @@ from cryptosystem.cryptosystem_utils import *
 
 class Encryptor(object):
 
-    # Public key is (n, g).
-    public_key = []
-
     # Constructor.
     def __init__(self, pub_key):
         if len(pub_key) != 2:
             raise Exception(f'Did not provide correct number of arguments for the public _key. Received {pub_key}')
 
+        # Public key is (n, g).
         self.public_key = pub_key
 
     # Encrypts the message.
