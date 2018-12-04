@@ -1,0 +1,17 @@
+This is the Paillier Cryptosystem implementation.
+This system has a homomorphic property.
+To demonstrate the property let's consider the following example:
+
+Let E(x) and D(x) be the encryption and decryption of x respectively.
+Let operator * for encrypted values correspond to + for unencrypted values.
+Then, encryption is called homomorphic if for any two unencrypted x1 and x2 follows:
+D(E(x1) * E(x2)) = x1 + x2
+
+Along with basic encryption/decryption mechanisms we implement several basic operators in encrypted domain, such as:
+1. Encrypted addition.
+2. Encrypted multiplication.
+3. Encrypted "greater than".
+4. Encrypted bit extraction.
+
+Please, refer to the following paper for the overview of the implementation:
+https://eprint.iacr.org/2018/827.pdf
