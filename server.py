@@ -19,10 +19,13 @@ except ImportError:
 bind_ip = '0.0.0.0'
 bind_port = 9999
 
+names = [str(i + 1) for i in range(5)]
+
 
 class Server:
     KEY_REQUEST = b"KEY\n"
     DATA_REQUEST = b"DATA\n"
+    NAMES_REQUEST = b"NAMES\n"
     SUCCESS = b"SUCCESS\n"
     ERROR = b"ERROR\n"
 
@@ -85,23 +88,32 @@ class Server:
         else:
             print("Server is already stopped")
 
+    def handle_data_request(self, client_socket):
+        message = Server.KEY_REQUEST + b'\n'.join([k.encode("utf-8") for k in self.crypto.public_key])
+        client_socket.send(message)
+
+        request = client_socket.recv(1024)
+        print(f"Received {len(request)} bytes")
+        if not request.startswith(Server.DATA_REQUEST):
+            client_socket.send(Server.ERROR)
+        else:
+            data = request[len(Server.DATA_REQUEST):]
+            self.crypto.process(data)
+
+    def handle_name_request(self, client_socket):
+        message = Server.NAMES_REQUEST + b'\n'.join([k.encode("utf-8") for k in names])
+        client_socket.send(message)
+
     def handle_client_connection(self, client_socket):
         try:
             request = client_socket.recv(1024)
             print(f"Received {len(request)} bytes")
-            if not request.startswith(Server.KEY_REQUEST):
-                client_socket.send(Server.ERROR)
+            if request.startswith(Server.KEY_REQUEST):
+                self.handle_data_request(client_socket)
+            elif request.startswith(Server.NAMES_REQUEST):
+                self.handle_name_request(client_socket)
             else:
-                message = Server.KEY_REQUEST + b'\n'.join([k.encode("utf-8") for k in self.crypto.public_key])
-                client_socket.send(message)
-
-                request = client_socket.recv(1024)
-                print(f"Received {len(request)} bytes")
-                if not request.startswith(Server.DATA_REQUEST):
-                    client_socket.send(Server.ERROR)
-                else:
-                    data = request[len(Server.DATA_REQUEST):]
-                    self.crypto.process(data)
+                client_socket.send(Server.ERROR)
         except BaseException as e:
             print(f"Server error: {e}")
             client_socket.send(Server.ERROR)
