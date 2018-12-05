@@ -6,7 +6,7 @@ import signal
 def sigterm_handler(_bla, _te):
     server.stop()
 
-server = Server(max_seconds=100000)
+server = Server(max_seconds=20)
 signal.signal(signal.SIGTERM, sigterm_handler)
 signal.signal(signal.SIGINT, sigterm_handler)
 
