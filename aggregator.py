@@ -9,6 +9,7 @@ from cryptosystem.cryptosystem_setup import *
 from cryptosystem.encryption import *
 from cryptosystem.decryption import *
 
+
 class Aggregator(object):
 
     # Constructor.
@@ -20,6 +21,8 @@ class Aggregator(object):
 
     # Add votes to current matrix.
     def add_vote(self, data):
+        modulo = self.encryptor.public_key[0] * self.encryptor.public_key[0]
+
         data = np.array(data)
         n, m = self.matrix.shape
         assert (n, m) == data.shape
@@ -32,7 +35,8 @@ class Aggregator(object):
                     convert_to_bit_array(self.decryptor.decrypt(data[i, j])),
                     self.encryptor
                 )
-                self.matrix[i, j] = addition_gate(x, y, self.encryptor, self.decryptor)
+                self.matrix[i, j] = to_number(
+                    addition_gate(x, y, self.encryptor, self.decryptor), modulo, self.encryptor, self.decryptor)
 
     # Aggregate the votes.
     def aggregate(self):
@@ -77,6 +81,7 @@ class Aggregator(object):
 
     # Adds encrypted array.
     def add_array(self, x, y=[]):
+        modulo = self.encryptor.public_key[0] * self.encryptor.public_key[0]
         encrypted_result = self.encryptor.encrypt(0)
 
         for i in range(0, len(x)):
@@ -86,7 +91,8 @@ class Aggregator(object):
                 self.encryptor
             )
 
-            encrypted_result = addition_gate(left, right, self.encryptor, self.decryptor)
+            encrypted_result = to_number(
+                addition_gate(left, right, self.encryptor, self.decryptor), modulo, self.encryptor, self.decryptor)
 
         if len(y) > 0:
             for i in range(0, len(y)):
@@ -96,11 +102,14 @@ class Aggregator(object):
                     self.encryptor
                 )
 
-                encrypted_result = addition_gate(left, right, self.encryptor, self.decryptor)
+                encrypted_result = to_number(
+                    addition_gate(left, right, self.encryptor, self.decryptor), modulo, self.encryptor, self.decryptor)
 
         return encrypted_result
 
     def aggr(self, x, g, rev=False):
+        modulo = self.encryptor.public_key[0] * self.encryptor.public_key[0]
+
         encrypted_result = self.encryptor.encrypt(0)
 
         if not rev:
@@ -112,10 +121,9 @@ class Aggregator(object):
                     self.encryptor
                 )
 
-                encrypted_result = addition_gate(left, right, self.encryptor, self.decryptor)
+                encrypted_result = to_number(
+                    addition_gate(left, right, self.encryptor, self.decryptor), modulo, self.encryptor, self.decryptor)
         else:
-            modulo = self.encryptor.public_key[0] * self.encryptor.public_key[0]
-
             for i in range(1, len(x)):
                 cur_result = (self.encryptor.encrypt(1) * invmod(g[i - 1], modulo)) % modulo
                 left, right = prepare_different_arrays(
@@ -124,7 +132,8 @@ class Aggregator(object):
                     self.encryptor
                 )
 
-                encrypted_result = addition_gate(left, right, self.encryptor, self.decryptor)
+                encrypted_result = to_number(
+                    addition_gate(left, right, self.encryptor, self.decryptor), modulo, self.encryptor, self.decryptor)
 
         return encrypted_result
 
@@ -158,7 +167,6 @@ class Aggregator(object):
                     else:
                         return winner
 
-
     def better2(self, bitwise_x_one, bitwise_x_two, bitwise_y_one, bitwise_y_two):
         first = self.decryptor.decrypt(greater_than_gate(bitwise_x_one, bitwise_x_two, self.encryptor, self.decryptor)) == 1
         second = self.decryptor.decrypt(greater_than_gate(bitwise_y_two, bitwise_y_one, self.encryptor, self.decryptor)) == 1
@@ -181,7 +189,6 @@ class Aggregator(object):
         third = self.decryptor.decrypt(
             greater_than_gate(bitwise_y_two, bitwise_x_two, self.encryptor, self.decryptor)) == 1
         return first and second and third
-
 
     def get_index(self, row, c):
         for i in range(0, len(row)):
