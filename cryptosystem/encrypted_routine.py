@@ -40,7 +40,7 @@ def addition_gate(bitwise_encrypted_x, bitwise_y, encryptor, decryptor):
     if decryptor.decrypt(encrypted_carry) > 0:
         bitwise_encrypted_result.append(encrypted_carry)
 
-    return cut(bitwise_encrypted_result, modulo, encryptor, decryptor)
+    return bitwise_encrypted_result
 
 
 # Bit extraction gate.
@@ -60,7 +60,7 @@ def bit_extraction_gate(encrypted_x, encryptor, decryptor):
     encrypted_y_array, z_array = prepare_different_arrays(encrypted_y_array, convert_to_bit_array(z), encryptor)
     encrypted_x_array = addition_gate(encrypted_y_array, z_array, encryptor, decryptor)
 
-    return to_number(encrypted_x_array, n, encryptor, decryptor)
+    return cut(encrypted_x_array, n, encryptor, decryptor)
 
 
 # Returns 1 if encrypted_x is greater than encrypted_y.
