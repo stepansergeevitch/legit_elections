@@ -2,8 +2,12 @@
 
 import numpy as np
 
+from candidates import *
 from cryptosystem.encrypted_routine import *
 from cryptosystem.cryptosystem_utils import *
+from cryptosystem.cryptosystem_setup import *
+from cryptosystem.encryption import *
+from cryptosystem.decryption import *
 
 class Aggregator(object):
 
@@ -187,5 +191,12 @@ class Aggregator(object):
         return len(row) - 1
 
 
+keys = generate_keys()
+enc = Encryptor(keys[0:2])
+dec = Decryptor(keys[0:2], keys[2:4])
+a = Aggregator(enc, dec, NUMBER_OF_CANDIDATES, NUMBER_OF_MARKS)
+print(a.matrix)
 
-
+test = [enc.encrypt(1) for i in range(NUMBER_OF_CANDIDATES * NUMBER_OF_MARKS)]
+test = np.array(test).reshape(NUMBER_OF_CANDIDATES, NUMBER_OF_MARKS)
+print(test)
