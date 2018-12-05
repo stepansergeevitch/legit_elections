@@ -7,7 +7,7 @@ from cryptosystem.cryptosystem_utils import *
 
 # Prime number bit length.
 # Currently small number, but needs to be updated when is_prime method is changed.
-BIT_LENGTH = 8
+BIT_LENGTH = 64
 
 
 # Generates public and private keys for the host.
@@ -27,7 +27,6 @@ def generate_keys():
     private_phi = (prime_p-1) * (prime_q-1)
     private_s = invmod(private_phi, public_n)
 
-    end = time.clock()
     print(f"Time spent for key generation: {time.clock() - start}")
 
     return public_n, public_g, private_phi, private_s

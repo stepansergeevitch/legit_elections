@@ -17,13 +17,13 @@ class Aggregator(object):
         self.encryptor = encryptor
         self.decryptor = decryptor
 
-        self.matrix = np.array([encryptor.encrypt(0) for i in range(rows * cols)]).reshape(rows, cols)
+        self.matrix = np.array([encryptor.encrypt(0) for i in range(rows * cols)], dtype=object).reshape(rows, cols)
 
     # Add votes to current matrix.
     def add_vote(self, data):
         modulo = self.encryptor.public_key[0] * self.encryptor.public_key[0]
 
-        data = np.array(data)
+        data = np.array(data, dtype=object)
         n, m = self.matrix.shape
         assert (n, m) == data.shape
 
@@ -39,27 +39,37 @@ class Aggregator(object):
 
     # Aggregate the votes.
     def aggregate(self):
+        start = time.clock()
+
         n, m = self.matrix.shape
 
         # Create candidate matrix.
         c = self.create_candidate_matrix(self.matrix)
 
+        print(f'All up to candidate matrix creation took: {time.clock() - start}')
+
         # Create grade vector.
         g = self.create_grade_vector(c)
+
+        print(f'All up to grade vector creation took: {time.clock() - start}')
 
         # Create tiebreak matrix.
         t = self.create_tiebreak_matrix(self.matrix, g)
 
+        print(f'All up to tiebreak matrix creation took: {time.clock() - start}')
+
         winner = 0
         for i in range(1, n):
             winner = self.get_better_candidate(winner, i, c, t)
+
+        print(f'Full aggregation took: {time.clock() - start}')
 
         return winner
 
     # Creates candidate matrix.
     def create_candidate_matrix(self, aggregated_matrix):
         n, m = aggregated_matrix.shape
-        c = np.zeros((n, m))
+        c = np.zeros((n, m), dtype=object)
 
         for i in range(n):
             row_total = self.array_sum(aggregated_matrix[i, 0:(m + 1)])
@@ -72,12 +82,12 @@ class Aggregator(object):
                 left, total = prepare_similar_arrays(bitwise_left, bitwise_row_total, self.encryptor)
                 c[i, j] = greater_than_gate(total, left, self.encryptor, self.decryptor)
 
-        return c.astype(np.int64)
+        return c
 
     # Creates grade vector.
     def create_grade_vector(self, candidate_matrix):
         n, m = candidate_matrix.shape
-        g = np.zeros(m)
+        g = np.zeros(m, dtype=object)
 
         for j in range(m):
             encrypted_res = self.encryptor.encrypt(1)
@@ -86,18 +96,18 @@ class Aggregator(object):
 
             g[j] = encrypted_res
 
-        return g.astype(np.int64)
+        return g
 
     # Creates tiebreak matrix.
     def create_tiebreak_matrix(self, aggregated_matrix, grade_vector):
         n, m = aggregated_matrix.shape
-        t = np.zeros((n, 2))
+        t = np.zeros((n, 2), dtype=object)
 
         for i in range(0, n):
             t[i, 0] = self.linear_combination(self.matrix[i], grade_vector, reverse=False)
             t[i, 1] = self.linear_combination(self.matrix[i], grade_vector, reverse=True)
 
-        return t.astype(np.int64)
+        return t
 
     # Adds encrypted array.
     def array_sum(self, x, y=[]):
@@ -227,4 +237,3 @@ class Aggregator(object):
 
         return to_number(
             addition_gate(left, right, self.encryptor, self.decryptor), modulo, self.encryptor, self.decryptor)
-
