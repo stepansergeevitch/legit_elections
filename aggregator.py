@@ -159,9 +159,14 @@ class Aggregator(object):
         else:
             bitwise_w_one = bit_extraction_gate(t[winner, 0], self.encryptor, self.decryptor)
             bitwise_w_two = bit_extraction_gate(t[winner, 1], self.encryptor, self.decryptor)
+            bitwise_w_one, bitwise_w_two = prepare_similar_arrays(bitwise_w_one, bitwise_w_two, self.encryptor)
 
             bitwise_p_one = bit_extraction_gate(t[potential, 0], self.encryptor, self.decryptor)
             bitwise_p_two = bit_extraction_gate(t[potential, 1], self.encryptor, self.decryptor)
+
+            bitwise_p_one, bitwise_p_two = prepare_similar_arrays(bitwise_p_one, bitwise_p_two, self.encryptor)
+            bitwise_w_one, bitwise_p_one = prepare_similar_arrays(bitwise_w_one, bitwise_p_one, self.encryptor)
+            bitwise_w_two, bitwise_p_two = prepare_similar_arrays(bitwise_w_two, bitwise_p_two, self.encryptor)
 
             if self.better2(bitwise_w_one, bitwise_w_two, bitwise_p_one, bitwise_p_two):
                 return winner
@@ -202,7 +207,7 @@ class Aggregator(object):
         return first and second and third
 
     def get_index(self, row, c):
-        for i in range(0, len(row)):
+        for i in range(len(c[row])):
             if self.decryptor.decrypt(c[row, i]) == 0:
                 return i
 
