@@ -49,7 +49,7 @@ class Client:
         assert self.pending_data_send == True
 
         data = '\n'.join(
-            ','.join(row)
+            ','.join(map(lambda x: str(x), row))
             for row in matrix
         ).encode("utf-8")
 
