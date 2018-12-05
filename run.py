@@ -1,8 +1,16 @@
 from server import Server
 from candidates import candidates, NUMBER_OF_CANDIDATES
+import sys
+import signal
+
+def sigterm_handler(_bla, _te):
+    server.stop()
+
+server = Server(max_seconds=100000)
+signal.signal(signal.SIGTERM, sigterm_handler)
+signal.signal(signal.SIGINT, sigterm_handler)
 
 if __name__ == "__main__":
-    server = Server(max_seconds=100000)
     server.run()
     server.wait_until_done()
 
