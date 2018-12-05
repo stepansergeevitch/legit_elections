@@ -1,6 +1,7 @@
 import socket
 import threading
 from datetime import timedelta, datetime
+from .candidates import candidates as names
 
 try:
     from .crypto import Crypto
@@ -19,7 +20,7 @@ except ImportError:
 bind_ip = '0.0.0.0'
 bind_port = 9999
 
-names = [str(i + 1) for i in range(5)]
+# names = [str(i + 1) for i in range(5)]
 
 
 class Server:
@@ -99,7 +100,7 @@ class Server:
             client_socket.send(Server.ERROR)
         else:
             data = request[len(Server.DATA_REQUEST):]
-            self.crypto.process([int(it) for it in data.decode("utf-8").split])
+            self.crypto.process(data.decode("utf-8"))
 
     def handle_name_request(self, client_socket):
         message = Server.NAMES_REQUEST + b'\n'.join([k.encode("utf-8") for k in names])
