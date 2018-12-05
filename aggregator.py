@@ -27,6 +27,10 @@ class Aggregator(object):
         n, m = self.matrix.shape
         assert (n, m) == data.shape
 
+        for i in range(n):
+            for j in range(m):
+                print(f'value: {self.decryptor.decrypt(data[i, j])}')
+
         for i in range(0, n):
             for j in range(0, m):
 
@@ -44,6 +48,10 @@ class Aggregator(object):
         c = np.zeros((n, m))
         g = np.zeros(m)
 
+        for i in range(n):
+            for j in range(m):
+                print(f'value: {self.decryptor.decrypt(self.matrix[i, j])}')
+
         # Create matrix c.
         for i in range(n):
             for j in range(0, m):
@@ -54,7 +62,10 @@ class Aggregator(object):
                 right = bit_extraction_gate(right, self.encryptor, self.decryptor)
 
                 left, right = prepare_similar_arrays(left, right, self.encryptor)
-                c[i, j] = greater_than_gate(right, left, self.encryptor)
+                c[i, j] = greater_than_gate(right, left, self.encryptor, self.decryptor)
+
+                dc = self.decryptor.decrypt(c[i, j])
+                assert dc == 0 or dc == 1
 
         # Create vector g.
         index_of_first_zero = -1
