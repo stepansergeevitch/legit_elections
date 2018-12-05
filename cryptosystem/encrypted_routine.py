@@ -40,7 +40,7 @@ def addition_gate(bitwise_encrypted_x, bitwise_y, encryptor, decryptor):
     if decryptor.decrypt(encrypted_carry) > 0:
         bitwise_encrypted_result.append(encrypted_carry)
 
-    return bitwise_encrypted_result
+    return cut(bitwise_encrypted_result, modulo, encryptor, decryptor)
 
 
 # Bit extraction gate.
@@ -60,7 +60,7 @@ def bit_extraction_gate(encrypted_x, encryptor, decryptor):
     encrypted_y_array, z_array = prepare_different_arrays(encrypted_y_array, convert_to_bit_array(z), encryptor)
     encrypted_x_array = addition_gate(encrypted_y_array, z_array, encryptor, decryptor)
 
-    return cut(encrypted_x_array, n, encryptor, decryptor)
+    return to_number(encrypted_x_array, n, encryptor, decryptor)
 
 
 # Returns 1 if encrypted_x is greater than encrypted_y.
@@ -113,6 +113,15 @@ def prepare_similar_arrays(x, y, encryptor=None):
         y.append(encryptor.encrypt(0) if encryptor is not None else 0)
 
     return x, y
+
+
+# Calculates new encrypted number modulo mod since value it represents may be larger than mod.
+def to_number(encrypted_array, mod, encryptor, decryptor):
+    result = 0
+    for i in range(0, len(encrypted_array)):
+        result = (result + decryptor.decrypt(encrypted_array[i]) * (1 << i)) % mod
+
+    return encryptor.encrypt(result)
 
 
 # Calculates new encrypted array modulo mod since value it represents may be larger than mod.
