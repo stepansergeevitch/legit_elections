@@ -10,7 +10,7 @@ except ImportError:
         def __init__(self, server):
             pass
 
-        public_key = ("", "")
+        public_key = (1, 2)
 
         def process(self, data):
             pass
@@ -89,7 +89,8 @@ class Server:
             print("Server is already stopped")
 
     def handle_data_request(self, client_socket):
-        message = Server.KEY_REQUEST + b'\n'.join([k.encode("utf-8") for k in self.crypto.public_key])
+        message = Server.KEY_REQUEST + b'\n'.join([str(k).encode("utf-8") for k in self.crypto.public_key])
+        print(message)
         client_socket.send(message)
 
         request = client_socket.recv(1024)
@@ -107,12 +108,14 @@ class Server:
     def handle_client_connection(self, client_socket):
         try:
             request = client_socket.recv(1024)
+            print(request)
             print(f"Received {len(request)} bytes")
             if request.startswith(Server.KEY_REQUEST):
                 self.handle_data_request(client_socket)
             elif request.startswith(Server.NAMES_REQUEST):
                 self.handle_name_request(client_socket)
             else:
+                print("here")
                 client_socket.send(Server.ERROR)
         except BaseException as e:
             print(f"Server error: {e}")
