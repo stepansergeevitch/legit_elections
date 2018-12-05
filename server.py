@@ -3,18 +3,18 @@ import threading
 from datetime import timedelta, datetime
 from candidates import candidates as names
 
-try:
-    from crypto import Crypto
-except ImportError:
-    class Crypto:
+# try:
+from crypto import Crypto
+# except ImportError:
+    # class Crypto:
 
-        def __init__(self, server):
-            pass
+    #     def __init__(self, server):
+    #         pass
 
-        public_key = (1, 2)
+    #     public_key = (1, 2)
 
-        def process(self, data):
-            pass
+    #     def process(self, data):
+    #         pass
 
 
 bind_ip = '0.0.0.0'
@@ -31,7 +31,7 @@ class Server:
     ERROR = b"ERROR\n"
 
     def __init__(self, ip_address="127.0.0.1", post=9999, backlog=5, max_seconds=5 * 60):
-        self.crypto = Crypto(self)
+        self.crypto = Crypto()
         self.stop_signal = threading.Event()
         self.backlog = backlog
         self.max_work_time = timedelta(seconds=max_seconds)
@@ -120,6 +120,8 @@ class Server:
                 client_socket.send(Server.ERROR)
         except BaseException as e:
             print(f"Server error: {e}")
+            import traceback
+            traceback.print_tb(e.__traceback__)
             client_socket.send(Server.ERROR)
         else:
             print(f"Successful data transfer")

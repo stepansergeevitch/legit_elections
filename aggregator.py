@@ -16,8 +16,9 @@ class Aggregator(object):
 
     # Add votes to current matrix.
     def add_vote(self, data):
-        n, m = self.matrix.shape()
-        assert (n, m) == data.shape()
+        data = np.array(data)
+        n, m = self.matrix.shape
+        assert (n, m) == data.shape
 
         for i in range(0, n):
             for j in range(0, m):
@@ -31,7 +32,7 @@ class Aggregator(object):
 
     # Aggregate the votes.
     def aggregate(self):
-        n, m = self.matrix.shape()
+        n, m = self.matrix.shape
         c = np.zeros((n, m))
         g = np.zeros(m)
 
