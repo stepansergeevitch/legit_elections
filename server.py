@@ -1,10 +1,10 @@
 import socket
 import threading
 from datetime import timedelta, datetime
-from .candidates import candidates as names
+from candidates import candidates as names
 
 try:
-    from .crypto import Crypto
+    from crypto import Crypto
 except ImportError:
     class Crypto:
 
