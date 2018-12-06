@@ -29,9 +29,9 @@ class Client:
         self.connect()
         assert self.pending_data_send == False
         self.client.send(Client.NAMES_REQUEST)
-        response = self.client.recv(1024)
+        response = self.client.recv(4096)
         assert response.startswith(Client.NAMES_REQUEST)
-        self.client.recv(1024)
+        self.client.recv(4096)
         self.close()
         return response[len(Client.NAMES_REQUEST):].decode("utf-8").split("\n")
 
@@ -39,7 +39,7 @@ class Client:
         self.connect()
         assert self.pending_data_send == False
         self.client.send(Client.KEY_REQUEST)
-        response = self.client.recv(1024)
+        response = self.client.recv(4096)
         assert response.startswith(Client.KEY_REQUEST)
         self.pending_data_send = True
         return [int(k) for k in response[len(Client.KEY_REQUEST):].decode("utf-8").split("\n")]
@@ -54,15 +54,15 @@ class Client:
         ).encode("utf-8")
 
         self.client.send(Client.DATA_REQUEST + data)
-        response = self.client.recv(1024)
+        response = self.client.recv(4096)
         self.pending_data_send = False
-        self.client.recv(1024)
+        self.client.recv(4096)
         self.close()
         return response.startswith(self.SUCCESS)
 
 
 def prompt_voting(names):
-    print(f"For each candidate name please type you grade from 1 to {len(names)}")
+    print(f"For each candidate name please type you grade from 1 (best) to {len(names)} (worst)")
     print("Each vote should be unique")
     votes = []
     valid = lambda v: v > 0 and v <= len(names)

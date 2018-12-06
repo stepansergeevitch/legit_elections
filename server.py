@@ -94,7 +94,7 @@ class Server:
         print(message)
         client_socket.send(message)
 
-        request = client_socket.recv(1024)
+        request = client_socket.recv(4096)
         print(f"Received {len(request)} bytes")
         if not request.startswith(Server.DATA_REQUEST):
             client_socket.send(Server.ERROR)
@@ -108,7 +108,7 @@ class Server:
 
     def handle_client_connection(self, client_socket):
         try:
-            request = client_socket.recv(1024)
+            request = client_socket.recv(4096)
             print(request)
             print(f"Received {len(request)} bytes")
             if request.startswith(Server.KEY_REQUEST):

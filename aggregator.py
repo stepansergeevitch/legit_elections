@@ -39,6 +39,7 @@ class Aggregator(object):
 
     # Aggregate the votes.
     def aggregate(self):
+        print('Aggregation started...')
         start = time.clock()
 
         n, m = self.matrix.shape
@@ -62,7 +63,7 @@ class Aggregator(object):
         for i in range(1, n):
             winner = self.get_better_candidate(winner, i, c, t)
 
-        print(f'Full aggregation took: {time.clock() - start}')
+        print(f'Finished. Full aggregation took: {time.clock() - start}')
 
         return winner
 
