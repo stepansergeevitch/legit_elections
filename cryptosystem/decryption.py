@@ -36,7 +36,7 @@ class Decryptor(object):
 
         res = (res - 1) // self.public_key[0]
 
-        print(f'Time spent for message decryption {time.clock() - start}')
+        # print(f'Time spent for message decryption {time.clock() - start}')
 
         # Return (res * s) % n.
         return (res * self.private_key[1]) % self.public_key[0]

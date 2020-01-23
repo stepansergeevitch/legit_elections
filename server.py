@@ -1,33 +1,37 @@
 import socket
 import threading
 from datetime import timedelta, datetime
+from candidates import candidates as names
 
-try:
-    from .crypto import Crypto
-except ImportError:
-    class Crypto:
+# try:
+from crypto import Crypto
+# except ImportError:
+    # class Crypto:
 
-        def __init__(self, server):
-            pass
+    #     def __init__(self, server):
+    #         pass
 
-        public_key = ("", "")
+    #     public_key = (1, 2)
 
-        def process(self, data):
-            pass
+    #     def process(self, data):
+    #         pass
 
 
 bind_ip = '0.0.0.0'
 bind_port = 9999
 
+# names = [str(i + 1) for i in range(5)]
+
 
 class Server:
-    KEY_REQUEST = "KEY\n"
-    DATA_REQUEST = "DATA\n"
-    SUCCESS = "SUCCESS\n"
-    ERROR = "ERROR\n"
+    KEY_REQUEST = b"KEY\n"
+    DATA_REQUEST = b"DATA\n"
+    NAMES_REQUEST = b"NAMES\n"
+    SUCCESS = b"SUCCESS\n"
+    ERROR = b"ERROR\n"
 
     def __init__(self, ip_address="127.0.0.1", post=9999, backlog=5, max_seconds=5 * 60):
-        self.crypto = Crypto(self)
+        self.crypto = Crypto()
         self.stop_signal = threading.Event()
         self.backlog = backlog
         self.max_work_time = timedelta(seconds=max_seconds)
@@ -85,25 +89,39 @@ class Server:
         else:
             print("Server is already stopped")
 
-    def handle_client_connection(self, client_socket):
-        request = client_socket.recv(1024)
-        print(f"Received {len(request)} bytes")
-        try:
-            if not request.startswith(Server.KEY_REQUEST):
-                client_socket.send(Server.ERROR)
-            else:
-                message = Server.KEY_REQUEST + '\n'.join(self.crypto.public_key)
-                client_socket.send(message)
+    def handle_data_request(self, client_socket):
+        message = Server.KEY_REQUEST + b'\n'.join([str(k).encode("utf-8") for k in self.crypto.public_key])
+        print(message)
+        client_socket.send(message)
 
-                request = client_socket.recv(1024)
-                print(f"Received {len(request)} bytes")
-                if not request.startswith(Server.DATA_REQUEST):
-                    client_socket.send(Server.ERROR)
-                else:
-                    data = request[len(Server.DATA_REQUEST):]
-                    self.crypto.process(data)
-        except Exception as e:
+        request = client_socket.recv(4096)
+        print(f"Received {len(request)} bytes")
+        if not request.startswith(Server.DATA_REQUEST):
+            client_socket.send(Server.ERROR)
+        else:
+            data = request[len(Server.DATA_REQUEST):]
+            self.crypto.process(data.decode("utf-8"))
+
+    def handle_name_request(self, client_socket):
+        message = Server.NAMES_REQUEST + b'\n'.join([k.encode("utf-8") for k in names])
+        client_socket.send(message)
+
+    def handle_client_connection(self, client_socket):
+        try:
+            request = client_socket.recv(4096)
+            print(request)
+            print(f"Received {len(request)} bytes")
+            if request.startswith(Server.KEY_REQUEST):
+                self.handle_data_request(client_socket)
+            elif request.startswith(Server.NAMES_REQUEST):
+                self.handle_name_request(client_socket)
+            else:
+                print("here")
+                client_socket.send(Server.ERROR)
+        except BaseException as e:
             print(f"Server error: {e}")
+            import traceback
+            traceback.print_tb(e.__traceback__)
             client_socket.send(Server.ERROR)
         else:
             print(f"Successful data transfer")
